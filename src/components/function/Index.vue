@@ -1,0 +1,151 @@
+<template>
+  <el-collapse v-model="activeItems">
+    <Summary name="summary" :data="data" />
+<!--    <Model :data="outputModels" />-->
+<!--    <Example :data="outputExample" />-->
+<!--    <Header :data="outputHeaders" />-->
+
+    <el-collapse-item name="input">
+      <template slot="title">
+        <span class="pnl-title">输入参数</span>
+      </template>
+      <el-tabs value="tpInputBody" tabPosition="left">
+        <el-tab-pane label="header" name="tpInputHeader" :disabled="inputHeaders.length < 1">
+          <Header :data="inputHeaders" :optional="true" />
+        </el-tab-pane>
+        <el-tab-pane label="query" name="tpInputQuery" :disabled="inputQueries.length < 1">
+          <Header :data="inputQueries" :optional="true" />
+        </el-tab-pane>
+        <el-tab-pane label="body" name="tpInputBody">
+          <el-tabs value="tpInputExample" tabPosition="right">
+            <el-tab-pane label="结构" name="tpInputModel">
+              <Model :data="inputModels" :optional="true"/>
+            </el-tab-pane>
+            <el-tab-pane label="示例" name="tpInputExample">
+              <Example :data="inputExample" />
+            </el-tab-pane>
+          </el-tabs>
+        </el-tab-pane>
+      </el-tabs>
+    </el-collapse-item>
+
+    <el-collapse-item name="output">
+      <template slot="title">
+        <span class="pnl-title">输出参数</span>
+      </template>
+      <el-tabs value="tpOutputBody" tabPosition="left">
+        <el-tab-pane label="header" name="tpOutputHeader" :disabled="outputHeaders.length < 1">
+          <Header :data="outputHeaders" />
+        </el-tab-pane>
+        <el-tab-pane label="body" name="tpOutputBody">
+          <el-tabs value="tpOutputExample" tabPosition="right">
+            <el-tab-pane label="结构" name="tpOutputModel">
+              <Model :data="outputModels" />
+            </el-tab-pane>
+            <el-tab-pane label="示例" name="tpOutputExample">
+              <Example :data="outputExample" />
+            </el-tab-pane>
+          </el-tabs>
+        </el-tab-pane>
+      </el-tabs>
+    </el-collapse-item>
+  </el-collapse>
+</template>
+
+<script>
+  import VueBase from '@/components/VueBase'
+  import Component from 'vue-class-component'
+  import Summary from './Summary'
+
+  import Model from './Model'
+  import Example from './Example'
+  import Header from './Header'
+
+  @Component({
+    components: {
+      Summary,
+      Model,
+      Example,
+      Header
+    },
+    props: {
+      id: {
+        type: String,
+        default: ""
+      }
+    },
+    watch: {
+      'id': {
+        handler: 'onIdChanged'
+      }
+    }
+  })
+  export default class Function extends VueBase {
+    activeItems = ["summary", "output", "input"]
+    data = null
+    outputExample = null;
+    outputModels = new Array();
+    outputHeaders = new Array();
+    inputExample = null;
+    inputModels = new Array();
+    inputHeaders = new Array();
+    inputQueries = new Array();
+
+    onIdChanged(newVal, oldVal) {
+      if(newVal === oldVal) {
+        return
+      }
+      this.getFunction(newVal);
+    }
+
+    fillFromChildren(children, parent) {
+      let count = parent.children.length;
+      for (let index = 0; index < count; ++index) {
+        let child = parent.children[index];
+        if(child.children.length < 1) {
+          continue
+        }
+        children.push(child);
+        this.fillFromChildren(children, child);
+      }
+    }
+
+    onGetFunction(code, err, data) {
+      if (code === 0) {
+        this.data = data;
+
+        // output
+        let models = new Array();
+        if(data.outputModel) {
+          models.push(data.outputModel);
+          this.fillFromChildren(models, data.outputModel)
+        }
+        this.outputModels = models;
+        this.outputHeaders = data.outputHeaders;
+        this.outputExample = data.outputSample;
+
+        // input
+        models = new Array();
+        if(data.inputModel) {
+          models.push(data.inputModel);
+          this.fillFromChildren(models, data.inputModel)
+        }
+        this.inputModels = models;
+        this.inputHeaders = data.inputHeaders;
+        this.inputQueries = data.inputQueries;
+        this.inputExample = data.inputSample;
+      }
+      else {
+        this.apiError(err);
+      }
+    }
+    getFunction(id) {
+      let uri = this.network.uris.getFunction + id;
+      this.post(uri, null, this.onGetFunction);
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+
+</style>
