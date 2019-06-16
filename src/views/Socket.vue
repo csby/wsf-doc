@@ -158,7 +158,6 @@
             if(!evt.data) {
                 return;
             }
-
             let txt = document.createTextNode(evt.data);
             let msg = document.createElement("pre");
             msg.appendChild(txt);

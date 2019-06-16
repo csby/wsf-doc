@@ -16,7 +16,9 @@ import {
   Tooltip,
   Form,
   FormItem,
-  InputNumber
+  InputNumber,
+  Dropdown,
+  DropdownMenu
 } from 'element-ui'
 import VueClipboard from 'vue-clipboard2'
 import App from './App.vue'
@@ -43,7 +45,8 @@ Vue.use(Tooltip)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(InputNumber)
-
+Vue.use(Dropdown)
+Vue.use(DropdownMenu)
 
 
 Vue.prototype.network = Network

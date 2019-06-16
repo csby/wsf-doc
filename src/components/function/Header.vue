@@ -1,6 +1,6 @@
 <template>
     <div v-if="data !== null">
-        <div v-for="(header, index) in data" :key="index">
+        <div class="row" v-for="(header, index) in data" :key="index">
             <span v-if="optional">
                 <span class="item-key item-label">{{header.name}}</span>
                 <span>:&nbsp;</span>
@@ -44,6 +44,9 @@
 </script>
 
 <style scoped lang="scss">
+    .row {
+        margin-bottom: 3px;
+    }
     .item-value {
         font-weight: bold;
     }

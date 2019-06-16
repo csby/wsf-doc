@@ -17,7 +17,8 @@
           <Header :data="inputQueries" :optional="true" />
         </el-tab-pane>
         <el-tab-pane label="body" name="tpInputBody">
-          <el-tabs value="tpInputExample" tabPosition="right">
+          <Form v-if="isForm" :data="inputForms" />
+          <el-tabs v-else value="tpInputExample" tabPosition="right">
             <el-tab-pane label="结构" name="tpInputModel">
               <Model :data="inputModels" :optional="true"/>
             </el-tab-pane>
@@ -60,13 +61,15 @@
   import Model from './Model'
   import Example from './Example'
   import Header from './Header'
+  import Form from './Form'
 
   @Component({
     components: {
       Summary,
       Model,
       Example,
-      Header
+      Header,
+      Form
     },
     props: {
       id: {
@@ -83,13 +86,15 @@
   export default class Function extends VueBase {
     activeItems = ["summary", "output", "input"]
     data = null
-    outputExample = null;
-    outputModels = new Array();
-    outputHeaders = new Array();
-    inputExample = null;
-    inputModels = new Array();
-    inputHeaders = new Array();
-    inputQueries = new Array();
+    outputExample = null
+    outputModels = new Array()
+    outputHeaders = new Array()
+    inputExample = null
+    inputModels = new Array()
+    inputHeaders = new Array()
+    inputQueries = new Array()
+    inputForms = new Array()
+    isForm = false
 
     onIdChanged(newVal, oldVal) {
       if(newVal === oldVal) {
@@ -133,7 +138,21 @@
         this.inputModels = models;
         this.inputHeaders = data.inputHeaders;
         this.inputQueries = data.inputQueries;
+        this.inputForms = data.inputForms;
         this.inputExample = data.inputSample;
+        this.isForm = false;
+        let inputHeaderCount = data.inputHeaders.length;
+        for(let i = 0; i <  inputHeaderCount; i++) {
+          let header = data.inputHeaders[i];
+          if(header.name.toLowerCase() === "content-type") {
+            let v = header.defaultValue;
+            if(this.isNotNullOrEmpty(v)) {
+              if(v.indexOf("form") !== -1) {
+                this.isForm = true;
+              }
+            }
+          }
+        }
       }
       else {
         this.apiError(err);

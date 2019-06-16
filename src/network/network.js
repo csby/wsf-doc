@@ -6,6 +6,11 @@ import HttpHandler from './httpHandler'
 const baseUrl = Url.getUrl()
 const uris = Uris.uris
 
+// example
+//  uri: "/api/info"
+//  argument: {id: "111212323"}
+//  handler: function(code, error, data){ }
+//  interceptor: function(response){ return response; }
 function post(uri, argument, handler, interceptor) {
     let config = {
         timeout: 30000,
