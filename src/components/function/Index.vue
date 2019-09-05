@@ -46,6 +46,9 @@
             <el-tab-pane label="示例" name="tpOutputExample">
               <Example :data="outputExample" />
             </el-tab-pane>
+            <el-tab-pane label="代码" name="tpOutputError" v-if="outputErrors.length > 0">
+              <Code :data="outputErrors" />
+            </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
       </el-tabs>
@@ -62,6 +65,7 @@
   import Example from './Example'
   import Header from './Header'
   import Form from './Form'
+  import Code from './Code'
 
   @Component({
     components: {
@@ -69,7 +73,8 @@
       Model,
       Example,
       Header,
-      Form
+      Form,
+      Code
     },
     props: {
       id: {
@@ -89,6 +94,7 @@
     outputExample = null
     outputModels = new Array()
     outputHeaders = new Array()
+    outputErrors = new Array()
     inputExample = null
     inputModels = new Array()
     inputHeaders = new Array()
@@ -103,39 +109,28 @@
       this.getFunction(newVal);
     }
 
-    fillFromChildren(children, parent) {
-      let count = parent.children.length;
-      for (let index = 0; index < count; ++index) {
-        let child = parent.children[index];
-        if(child.children.length < 1) {
-          continue
-        }
-        children.push(child);
-        this.fillFromChildren(children, child);
-      }
-    }
-
     onGetFunction(code, err, data) {
       if (code === 0) {
         this.data = data;
 
         // output
-        let models = new Array();
         if(data.outputModel) {
-          models.push(data.outputModel);
-          this.fillFromChildren(models, data.outputModel)
+          this.outputModels = data.outputModel;
+        } else {
+          this.outputModels = [];
         }
-        this.outputModels = models;
         this.outputHeaders = data.outputHeaders;
         this.outputExample = data.outputSample;
+        if(data.outputErrors) {
+          this.outputErrors = data.outputErrors;
+        }
 
         // input
-        models = new Array();
         if(data.inputModel) {
-          models.push(data.inputModel);
-          this.fillFromChildren(models, data.inputModel)
+          this.inputModels = data.inputModel;
+        } else {
+          this.inputModels = [];
         }
-        this.inputModels = models;
         this.inputHeaders = data.inputHeaders;
         this.inputQueries = data.inputQueries;
         this.inputForms = data.inputForms;

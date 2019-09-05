@@ -1,7 +1,7 @@
 <template>
     <div v-if="data !== null">
         <div v-for="(model, index) in data" :key="index">
-            <span class="model-key">{{model.type}}&nbsp;{</span>
+            <span class="model-key">{{model.name}}&nbsp;{</span>
             <div>
                 <div v-for="(child, index) in model.children" :key="index">
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
