@@ -17,6 +17,11 @@ module.exports = {
                     to: './version.js',
                     toType: 'file'
                 },
+                {
+                    from: './src/id.txt',
+                    to: './id.txt',
+                    toType: 'file'
+                },
             ], {})
         ]
     },
